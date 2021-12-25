@@ -139,7 +139,7 @@ parameter_types! {
 	pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
 		::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
 	pub const SS58Prefix: u8 = 42;
-	pub const AssetDepositBase: usize = 128;
+	pub const MaxClaimLength: usize = 128;
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -317,7 +317,7 @@ impl pallet_template::Config for Runtime {
 
 impl pallet_poe::Config for Runtime {
 	type Event = Event;
-	type AssetDepositBase = AssetDepositBase;
+	type MaxClaimLength = MaxClaimLength;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.

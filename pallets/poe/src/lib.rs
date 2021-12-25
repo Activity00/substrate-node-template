@@ -18,7 +18,7 @@ pub mod pallet {
 	#[pallet::config] 
 	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-		type AssetDepositBase: Get<usize>;
+		type MaxClaimLength: Get<usize>;
 	}
 
 	#[pallet::event]
@@ -52,7 +52,7 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn create_claim(origin: OriginFor<T>, proof: Vec<u8>) -> DispatchResult {
 			let sender = ensure_signed(origin)?;
-			ensure!(proof.len() <= T::AssetDepositBase::get(), Error::<T>::ClaimTooLong);
+			ensure!(proof.len() <= T::MaxClaimLength::get(), Error::<T>::ClaimTooLong);
 			ensure!(!Proofs::<T>::contains_key(&proof), Error::<T>::ProofAlreadyClaimed);
 			let current_block = <frame_system::Pallet<T>>::block_number();
 			Proofs::<T>::insert(&proof, (&sender, current_block));
@@ -74,7 +74,7 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn transfer_claim(origin: OriginFor<T>,claim: Vec<u8>,dest: T::AccountId) -> DispatchResultWithPostInfo {
 			let sender = ensure_signed(origin)?;
-			ensure!(claim.len() <= T::AssetDepositBase::get(), Error::<T>::ClaimTooLong);
+			ensure!(claim.len() <= T::MaxClaimLength::get(), Error::<T>::ClaimTooLong);
 			ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::NoSuchProof);
 			let (owner, _block_number) = Proofs::<T>::get(&claim);
 			ensure!(owner == sender, Error::<T>::NotProofOwner);
